@@ -1,7 +1,7 @@
 import asyncio
 
 def getControlConnection(controller): 
-    def controlConnection(websocket, path):
+    async def controlConnection(websocket, path):
         escape = False
         while not escape:
             command = await websocket.recv()
