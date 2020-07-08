@@ -8,6 +8,7 @@ def getControlConnection(controller):
             if command == "END":
                 escape = True
             else:
+                print("command")
                 websocket.send(controller.giveCommand(command))
     return controlConnection
 
