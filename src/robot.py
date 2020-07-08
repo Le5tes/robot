@@ -9,7 +9,7 @@ from robot_control.robot_control import RobotController
 controller = RobotController()
 
 start_server = websockets.serve(
-    getControlConnection(controller), "localhost", 8765
+    getControlConnection(controller), "0.0.0.0", 8765
 )
 
 asyncio.get_event_loop().run_until_complete(start_server)
