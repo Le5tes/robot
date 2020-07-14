@@ -2,7 +2,7 @@ import gpiozero
 
 class RobotController:
     def __init__(self):
-        self.robot = gpiozero.Robot(left=(17,18), right=(27,22))
+        self.robot = gpiozero.Robot(left=(17,18), right=(22,27))
 
     def giveCommand(self, command):
         print(command)
