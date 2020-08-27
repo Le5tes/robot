@@ -14,7 +14,7 @@ async def broadcastOut(converter, websocket):
         while True:
             buf = await converter.stdout.read1(32768)
             if buf:
-                websocket.send(buf)
+                await websocket.send(buf)
             elif converter.poll() is not None:
                 break
     finally:
@@ -28,5 +28,5 @@ def startCamera(websocket):
         camera.hflip = HFLIP # flips image left-right, as needed
         sleep(1) # camera warm-up time
         output = CameraConverterOutput(camera)
-        broadcastOut(output.converter, websocket)
+        asyncio.create_task(broadcastOut(output.converter, websocket))
         camera.start_recording(output, 'yuv')
