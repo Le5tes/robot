@@ -11,16 +11,20 @@ VFLIP = False
 HFLIP = False
 
 def getOutput(converter):
+    print("in get output")
     return converter.stdout.read1(32768)
 
 async def broadcastOut(converter, websocket):
+    print("in broadcastOut")
     loop = asyncio.get_running_loop()
     
     try:
         while True:
             with concurrent.futures.ThreadPoolExecutor() as pool:
+                print("await output in broadcastOut")
                 buf = await loop.run_in_executor(pool, getOutput, converter)
                 if buf:
+                    print("got output, sending")
                     websocket.send(buf)
                 elif converter.poll() is not None:
                     break
@@ -36,4 +40,5 @@ def startCamera(websocket):
         sleep(1) # camera warm-up time
         output = CameraConverterOutput(camera)
         asyncio.create_task(broadcastOut(output.converter, websocket))
+        print("starting recording")
         camera.start_recording(output, 'yuv')
