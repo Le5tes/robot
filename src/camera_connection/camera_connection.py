@@ -2,6 +2,7 @@ from camera_connection.camera_converter_output import CameraConverterOutput
 from time import sleep
 import picamera
 import asyncio
+import concurrent.futures
 
 WIDTH = 640
 HEIGHT = 480
@@ -9,14 +10,20 @@ FRAMERATE = 24
 VFLIP = False
 HFLIP = False
 
+def getOutput(converter):
+    return converter.stdout.read1(32768)
+
 async def broadcastOut(converter, websocket):
+    loop = asyncio.get_running_loop()
+    
     try:
         while True:
-            buf = await converter.stdout.read1(32768)
-            if buf:
-                await websocket.send(buf)
-            elif converter.poll() is not None:
-                break
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                buf = await loop.run_in_executor(pool, getOutput, converter)
+                if buf:
+                    websocket.send(buf)
+                elif converter.poll() is not None:
+                    break
     finally:
         converter.stdout.close()
 
